@@ -3,447 +3,260 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ProductHub - Portable Gallery</title>
-    
-    <!-- React & ReactDOM -->
-    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
-    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
-    
-    <!-- Babel for JSX -->
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-    
-    <!-- Tailwind CSS -->
+    <title>My Google Drive Gallery</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    
-    <!-- Tailwind Config for Custom Colors/Animations -->
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    animation: {
-                        'fade-in-up': 'fadeInUp 0.5s ease-out',
-                        'in': 'fadeIn 0.2s ease-out',
-                    },
-                    keyframes: {
-                        fadeInUp: {
-                            '0%': { opacity: '0', transform: 'translateY(10px)' },
-                            '100%': { opacity: '1', transform: 'translateY(0)' },
-                        },
-                        fadeIn: {
-                            '0%': { opacity: '0' },
-                            '100%': { opacity: '1' },
-                        }
-                    }
-                }
-            }
-        }
-    </script>
-    
+    <!-- Google API Scripts -->
+    <script async defer src="https://apis.google.com/js/api.js"></script>
+    <script async defer src="https://accounts.google.com/gsi/client"></script>
     <style>
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar {
-            width: 8px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #f1f1f1; 
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #cbd5e1; 
-            border-radius: 4px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #94a3b8; 
-        }
+        .loader { border-top-color: #3B82F6; -webkit-animation: spinner 1.5s linear infinite; animation: spinner 1.5s linear infinite; }
+        @keyframes spinner { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
 </head>
-<body class="bg-gray-50 text-gray-800 font-sans antialiased">
-    <div id="root"></div>
+<body class="bg-gray-50 font-sans text-gray-800">
 
-    <script type="text/babel">
-        const { useState, useRef, useEffect } = React;
+    <!-- LOGIN SCREEN -->
+    <div id="login-screen" class="fixed inset-0 z-50 flex items-center justify-center bg-white">
+        <div class="text-center">
+            <div class="w-20 h-20 bg-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-xl">
+                <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z"></path></svg>
+            </div>
+            <h1 class="text-3xl font-bold mb-2">Drive Gallery</h1>
+            <p class="text-gray-500 mb-8">Connect your Google Drive to view & upload photos.</p>
+            <button id="authorize_button" class="bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 font-bold py-3 px-6 rounded-xl shadow-sm flex items-center gap-3 mx-auto transition-all">
+                <img src="https://www.svgrepo.com/show/475656/google-color.svg" class="w-6 h-6" alt="Google">
+                Sign In with Google
+            </button>
+            <p id="auth-error" class="text-red-500 mt-4 text-sm hidden">Error: Please check your API Keys.</p>
+        </div>
+    </div>
 
-        // --- ICONS (Inlined SVG Components to avoid dependencies) ---
-        const IconBase = ({ children, size = 24, className = "" }) => (
-            <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>{children}</svg>
-        );
-
-        const Upload = (props) => <IconBase {...props}><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" x2="12" y1="3" y2="15"/></IconBase>;
-        const Download = (props) => <IconBase {...props}><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></IconBase>;
-        const Trash2 = (props) => <IconBase {...props}><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/></IconBase>;
-        const Search = (props) => <IconBase {...props}><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></IconBase>;
-        const X = (props) => <IconBase {...props}><path d="M18 6 6 18"/><path d="m6 6 12 12"/></IconBase>;
-        const ImageIcon = (props) => <IconBase {...props}><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></IconBase>;
-        const Plus = (props) => <IconBase {...props}><path d="M5 12h14"/><path d="M12 5v14"/></IconBase>;
-        const Share2 = (props) => <IconBase {...props}><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" x2="15.42" y1="13.51" y2="17.49"/><line x1="15.41" x2="8.59" y1="6.51" y2="10.49"/></IconBase>;
-        const Check = (props) => <IconBase {...props}><polyline points="20 6 9 17 4 12"/></IconBase>;
-        const Maximize2 = (props) => <IconBase {...props}><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" x2="14" y1="3" y2="10"/><line x1="3" x2="10" y1="21" y2="14"/></IconBase>;
-
-        // --- DATA ---
-        const INITIAL_PRODUCTS = [
-            { id: 1, name: 'Minimalist Watch', url: 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&q=80&w=800', type: 'image/jpeg' },
-            { id: 2, name: 'Leather Bag', url: 'https://images.unsplash.com/photo-1548036328-c9fa89d128fa?auto=format&fit=crop&q=80&w=800', type: 'image/jpeg' },
-            { id: 3, name: 'Wireless Headphones', url: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&q=80&w=800', type: 'image/jpeg' },
-            { id: 4, name: 'Ceramic Vase', url: 'https://images.unsplash.com/photo-1581539250439-c9230243f651?auto=format&fit=crop&q=80&w=800', type: 'image/jpeg' },
-        ];
-
-        // --- MAIN APP ---
-        function App() {
-            const [products, setProducts] = useState(INITIAL_PRODUCTS);
-            const [searchQuery, setSearchQuery] = useState('');
-            const [isDragging, setIsDragging] = useState(false);
-            const [selectedProduct, setSelectedProduct] = useState(null);
-            const [copiedId, setCopiedId] = useState(null);
-            const fileInputRef = useRef(null);
-
-            // Deep linking
-            useEffect(() => {
-                const params = new URLSearchParams(window.location.search);
-                const productId = params.get('product');
-                if (productId) {
-                    const found = products.find(p => p.id.toString() === productId);
-                    if (found) {
-                        setSelectedProduct(found);
-                    }
-                }
-            }, []); // Run once on mount
-
-            // Handle File Upload
-            const handleFileUpload = (event) => {
-                const files = event.target.files;
-                if (files && files.length > 0) {
-                    processFiles(files);
-                }
-            };
-
-            const processFiles = (files) => {
-                const newProducts = Array.from(files).map((file) => ({
-                    id: Date.now() + Math.random(),
-                    name: file.name.split('.')[0], 
-                    url: URL.createObjectURL(file), 
-                    type: file.type,
-                    fileObject: file 
-                }));
-
-                setProducts(prev => [...newProducts, ...prev]);
-            };
-
-            // Drag and Drop
-            const onDragOver = (e) => {
-                e.preventDefault();
-                setIsDragging(true);
-            };
-
-            const onDragLeave = (e) => {
-                e.preventDefault();
-                setIsDragging(false);
-            };
-
-            const onDrop = (e) => {
-                e.preventDefault();
-                setIsDragging(false);
-                if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
-                    processFiles(e.dataTransfer.files);
-                }
-            };
-
-            // Download
-            const downloadImage = async (product, e) => {
-                if(e) e.stopPropagation();
-                try {
-                    const response = await fetch(product.url);
-                    const blob = await response.blob();
-                    const blobUrl = window.URL.createObjectURL(blob);
-                    
-                    const link = document.createElement('a');
-                    link.href = blobUrl;
-                    link.download = product.name || 'product-image';
-                    document.body.appendChild(link);
-                    link.click();
-                    document.body.removeChild(link);
-                    
-                    if (blobUrl !== product.url) {
-                        window.URL.revokeObjectURL(blobUrl);
-                    }
-                } catch (error) {
-                    console.error("Download failed, opening in new tab", error);
-                    window.open(product.url, '_blank');
-                }
-            };
-
-            const deleteProduct = (id, e) => {
-                if(e) e.stopPropagation();
-                setProducts(products.filter(p => p.id !== id));
-                if (selectedProduct?.id === id) closeModal();
-            };
-
-            // Modal / Preview Logic
-            const openModal = (product) => {
-                setSelectedProduct(product);
-                // Update URL to include product ID
-                const newUrl = new URL(window.location);
-                newUrl.searchParams.set('product', product.id);
-                window.history.pushState({}, '', newUrl);
-            };
-
-            const closeModal = () => {
-                setSelectedProduct(null);
-                // Remove product ID from URL
-                const newUrl = new URL(window.location);
-                newUrl.searchParams.delete('product');
-                window.history.pushState({}, '', newUrl);
-            };
-
-            const generateLink = (product, e) => {
-                if(e) e.stopPropagation();
-                
-                // For standalone file usage, we construct the link based on current location
-                const baseUrl = window.location.href.split('?')[0];
-                const link = `${baseUrl}?product=${product.id}`;
-                
-                const textArea = document.createElement("textarea");
-                textArea.value = link;
-                textArea.style.position = "fixed";
-                textArea.style.left = "-9999px";
-                textArea.style.top = "0";
-                document.body.appendChild(textArea);
-                
-                textArea.focus();
-                textArea.select();
-                
-                try {
-                    const successful = document.execCommand('copy');
-                    if (successful) {
-                        setCopiedId(product.id);
-                        setTimeout(() => setCopiedId(null), 2000);
-                    }
-                } catch (err) {
-                    console.error('Unable to copy', err);
-                }
-                
-                document.body.removeChild(textArea);
-            };
-
-            const filteredProducts = products.filter(p => 
-                p.name.toLowerCase().includes(searchQuery.toLowerCase())
-            );
-
-            return (
-                <div 
-                    className="min-h-screen"
-                    onDragOver={onDragOver}
-                    onDragLeave={onDragLeave}
-                    onDrop={onDrop}
-                >
-                    {/* Drag Overlay */}
-                    {isDragging && (
-                        <div className="fixed inset-0 bg-blue-500/20 backdrop-blur-sm z-50 flex items-center justify-center border-4 border-blue-500 border-dashed m-4 rounded-3xl">
-                            <div className="bg-white p-8 rounded-2xl shadow-xl flex flex-col items-center animate-bounce">
-                                <Upload className="w-16 h-16 text-blue-500 mb-4" />
-                                <h2 className="text-2xl font-bold text-blue-600">Drop photos here</h2>
-                            </div>
-                        </div>
-                    )}
-
-                    {/* Full Screen Preview Modal */}
-                    {selectedProduct && (
-                        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/95 backdrop-blur-sm p-4 animate-in">
-                            <button 
-                                onClick={closeModal}
-                                className="absolute top-4 right-4 text-white/70 hover:text-white p-2 rounded-full hover:bg-white/10 transition-colors z-50"
-                            >
-                                <X size={32} />
-                            </button>
-                            
-                            <div className="relative w-full max-w-6xl h-full flex flex-col items-center justify-center">
-                                <div className="relative max-h-[85vh] w-full flex items-center justify-center">
-                                    <img 
-                                        src={selectedProduct.url} 
-                                        alt={selectedProduct.name} 
-                                        className="max-h-[85vh] max-w-full object-contain rounded-lg shadow-2xl"
-                                    />
-                                </div>
-                                
-                                <div className="mt-6 flex flex-col md:flex-row items-center gap-6 text-white w-full justify-center">
-                                    <div className="text-center md:text-left">
-                                        <h2 className="text-2xl font-bold">{selectedProduct.name}</h2>
-                                        <p className="text-white/50 text-sm">Full Resolution Preview</p>
-                                    </div>
-                                    
-                                    <div className="flex items-center gap-3 bg-white/10 p-2 rounded-xl backdrop-blur-md">
-                                        <button 
-                                            onClick={(e) => downloadImage(selectedProduct, e)}
-                                            className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg font-medium transition-colors"
-                                        >
-                                            <Download size={18} /> Download
-                                        </button>
-                                        
-                                        <button 
-                                            onClick={(e) => generateLink(selectedProduct, e)}
-                                            className="flex items-center gap-2 px-4 py-2 bg-white/10 hover:bg-white/20 rounded-lg font-medium transition-colors"
-                                        >
-                                            {copiedId === selectedProduct.id ? <Check size={18} /> : <Share2 size={18} />}
-                                            {copiedId === selectedProduct.id ? 'Copied!' : 'Copy Link'}
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    )}
-
-                    {/* Header */}
-                    <header className="sticky top-0 z-40 bg-white/80 backdrop-blur-md border-b border-gray-200">
-                        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-                            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                                <div className="flex items-center gap-3">
-                                    <div className="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center text-white shadow-lg shadow-blue-200">
-                                        <ImageIcon size={24} />
-                                    </div>
-                                    <h1 className="text-2xl font-bold tracking-tight text-gray-900">Product<span className="text-blue-600">Hub</span></h1>
-                                </div>
-
-                                <div className="flex items-center gap-3 flex-1 max-w-xl">
-                                    <div className="relative flex-1 group">
-                                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5 group-focus-within:text-blue-500 transition-colors" />
-                                        <input 
-                                            type="text" 
-                                            placeholder="Search your products..." 
-                                            className="w-full pl-10 pr-4 py-2.5 bg-gray-100 border-transparent rounded-xl focus:bg-white focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
-                                            value={searchQuery}
-                                            onChange={(e) => setSearchQuery(e.target.value)}
-                                        />
-                                    </div>
-                                    
-                                    <button 
-                                        onClick={() => fileInputRef.current.click()}
-                                        className="hidden md:flex bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-xl font-medium transition-all shadow-lg shadow-blue-200 items-center gap-2 active:scale-95"
-                                    >
-                                        <Plus size={20} />
-                                        Upload
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </header>
-
-                    <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-                        {/* Stats & Actions */}
-                        <div className="flex items-center justify-between mb-8">
-                            <p className="text-gray-500 font-medium">
-                                Showing <span className="text-gray-900 font-bold">{filteredProducts.length}</span> products
-                            </p>
-                            <div className="flex gap-2">
-                                <button 
-                                    onClick={() => fileInputRef.current.click()}
-                                    className="md:hidden flex bg-blue-600 text-white p-3 rounded-full shadow-lg"
-                                >
-                                    <Plus size={24} />
-                                </button>
-                            </div>
-                        </div>
-
-                        {/* Hidden File Input */}
-                        <input 
-                            type="file" 
-                            ref={fileInputRef} 
-                            className="hidden" 
-                            multiple 
-                            accept="image/*" 
-                            onChange={handleFileUpload}
-                        />
-
-                        {/* Gallery Grid */}
-                        {filteredProducts.length === 0 ? (
-                            <div className="flex flex-col items-center justify-center py-20 text-center border-2 border-dashed border-gray-300 rounded-3xl bg-gray-50/50">
-                                <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mb-4">
-                                    <ImageIcon className="text-gray-400 w-10 h-10" />
-                                </div>
-                                <h3 className="text-xl font-semibold text-gray-900 mb-2">No products found</h3>
-                                <p className="text-gray-500 max-w-sm mb-6">
-                                    Upload some photos to get started, or try a different search term.
-                                </p>
-                                <button 
-                                    onClick={() => fileInputRef.current.click()}
-                                    className="text-blue-600 font-semibold hover:text-blue-700 hover:underline"
-                                >
-                                    Upload Photos
-                                </button>
-                            </div>
-                        ) : (
-                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                                {filteredProducts.map((product) => (
-                                    <div 
-                                        key={product.id} 
-                                        onClick={() => openModal(product)}
-                                        className="group relative bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100 hover:-translate-y-1 cursor-pointer"
-                                    >
-                                        {/* Image Aspect Ratio Container */}
-                                        <div className="aspect-[4/3] overflow-hidden bg-gray-100 relative">
-                                            <img 
-                                                src={product.url} 
-                                                alt={product.name} 
-                                                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                                            />
-                                            
-                                            {/* Overlay Actions */}
-                                            <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center gap-3 backdrop-blur-[2px]">
-                                                <button 
-                                                    onClick={(e) => downloadImage(product, e)}
-                                                    className="bg-white/90 hover:bg-white text-gray-900 p-3 rounded-full shadow-lg transform translate-y-4 group-hover:translate-y-0 transition-all duration-300 hover:scale-110"
-                                                    title="Download"
-                                                >
-                                                    <Download size={20} />
-                                                </button>
-                                                <button 
-                                                    onClick={(e) => generateLink(product, e)}
-                                                    className="bg-white/90 hover:bg-white text-gray-900 p-3 rounded-full shadow-lg transform translate-y-4 group-hover:translate-y-0 transition-all duration-300 delay-75 hover:scale-110"
-                                                    title="Copy Link"
-                                                >
-                                                    {copiedId === product.id ? <Check size={20} className="text-green-600"/> : <Share2 size={20} />}
-                                                </button>
-                                                <button 
-                                                    onClick={(e) => deleteProduct(product.id, e)}
-                                                    className="bg-red-500/90 hover:bg-red-500 text-white p-3 rounded-full shadow-lg transform translate-y-4 group-hover:translate-y-0 transition-all duration-300 delay-100 hover:scale-110"
-                                                    title="Delete"
-                                                >
-                                                    <Trash2 size={20} />
-                                                </button>
-                                            </div>
-                                        </div>
-
-                                        {/* Card Content */}
-                                        <div className="p-4">
-                                            <h3 className="font-semibold text-gray-900 truncate" title={product.name}>
-                                                {product.name}
-                                            </h3>
-                                            <div className="flex items-center justify-between mt-2">
-                                                <span className="text-xs font-medium text-gray-400 uppercase tracking-wider">
-                                                    JPG
-                                                </span>
-                                                <button className="text-gray-400 hover:text-blue-600 transition-colors">
-                                                    <Maximize2 size={16} />
-                                                </button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-                        )}
-                    </main>
-
-                    {/* Floating Upload Hint */}
-                    {!isDragging && (
-                        <div className="fixed bottom-8 right-8 hidden xl:flex items-center gap-4 animate-fade-in-up">
-                        <div className="bg-gray-900 text-white text-sm py-2 px-4 rounded-lg shadow-lg">
-                            💡 Pro tip: Drag & drop anywhere to upload
-                        </div>
-                        </div>
-                    )}
+    <!-- MAIN APP (Hidden until logged in) -->
+    <div id="app-content" class="hidden min-h-screen">
+        <!-- Header -->
+        <header class="bg-white/80 backdrop-blur-md sticky top-0 z-40 border-b border-gray-200">
+            <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
+                <div class="flex items-center gap-2">
+                    <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z"></path></svg>
+                    <span class="font-bold text-xl">Drive<span class="text-blue-600">Gallery</span></span>
                 </div>
-            );
+                <div class="flex gap-3">
+                    <button onclick="document.getElementById('file-input').click()" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center gap-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                        Upload Photo
+                    </button>
+                    <button id="signout_button" class="text-gray-500 hover:text-red-500 px-3 py-2">Sign Out</button>
+                </div>
+            </div>
+        </header>
+
+        <input type="file" id="file-input" class="hidden" accept="image/*" multiple>
+
+        <!-- Status Bar -->
+        <div id="status-bar" class="hidden max-w-7xl mx-auto px-4 py-2 mt-4">
+            <div class="bg-blue-50 text-blue-700 px-4 py-2 rounded-lg flex items-center gap-2">
+                <div class="loader ease-linear rounded-full border-2 border-t-2 border-gray-200 h-4 w-4"></div>
+                <span id="status-text">Processing...</span>
+            </div>
+        </div>
+
+        <!-- Gallery Grid -->
+        <main class="max-w-7xl mx-auto px-4 py-8">
+            <div id="gallery-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                <!-- Images will be injected here -->
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // TODO: REPLACE THESE WITH YOUR KEYS FROM GOOGLE CLOUD CONSOLE
+        const CLIENT_ID = 'YOUR_CLIENT_ID_HERE'; 
+        const API_KEY = 'YOUR_API_KEY_HERE'; 
+
+        // Discovery doc URL for APIs used by the quickstart
+        const DISCOVERY_DOC = 'https://www.googleapis.com/discovery/v1/apis/drive/v3/rest';
+
+        // Authorization scopes required by the API; multiple scopes can be
+        // included, separated by spaces.
+        const SCOPES = 'https://www.googleapis.com/auth/drive.file';
+
+        let tokenClient;
+        let gapiInited = false;
+        let gisInited = false;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            if(CLIENT_ID === 'YOUR_CLIENT_ID_HERE') {
+                alert("Please edit the HTML file and add your Google Client ID and API Key!");
+            }
+        });
+
+        // 1. Load Google Libraries
+        function gapiLoaded() {
+            gapi.load('client', initializeGapiClient);
         }
 
-        const root = ReactDOM.createRoot(document.getElementById('root'));
-        root.render(<App />);
+        async function initializeGapiClient() {
+            await gapi.client.init({
+                apiKey: API_KEY,
+                discoveryDocs: [DISCOVERY_DOC],
+            });
+            gapiInited = true;
+            maybeEnableButtons();
+        }
+
+        function gisLoaded() {
+            tokenClient = google.accounts.oauth2.initTokenClient({
+                client_id: CLIENT_ID,
+                scope: SCOPES,
+                callback: '', // defined later
+            });
+            gisInited = true;
+            maybeEnableButtons();
+        }
+
+        function maybeEnableButtons() {
+            if (gapiInited && gisInited) {
+                document.getElementById('authorize_button').onclick = handleAuthClick;
+                document.getElementById('signout_button').onclick = handleSignoutClick;
+            }
+        }
+
+        // 2. Authentication Logic
+        function handleAuthClick() {
+            tokenClient.callback = async (resp) => {
+                if (resp.error !== undefined) {
+                    throw (resp);
+                }
+                document.getElementById('login-screen').classList.add('hidden');
+                document.getElementById('app-content').classList.remove('hidden');
+                await listFiles();
+            };
+
+            if (gapi.client.getToken() === null) {
+                // Prompt the user to select a Google Account and ask for consent to share their data
+                tokenClient.requestAccessToken({prompt: 'consent'});
+            } else {
+                // Skip display of account chooser and consent dialog for an existing session
+                tokenClient.requestAccessToken({prompt: ''});
+            }
+        }
+
+        function handleSignoutClick() {
+            const token = gapi.client.getToken();
+            if (token !== null) {
+                google.accounts.oauth2.revoke(token.access_token);
+                gapi.client.setToken('');
+                document.getElementById('app-content').classList.add('hidden');
+                document.getElementById('login-screen').classList.remove('hidden');
+            }
+        }
+
+        // 3. File Operations
+        async function listFiles() {
+            updateStatus('Loading photos from Drive...', true);
+            const grid = document.getElementById('gallery-grid');
+            grid.innerHTML = '';
+
+            try {
+                // Search for images created by this app (drive.file scope limits visibility to only these)
+                const response = await gapi.client.drive.files.list({
+                    'pageSize': 20,
+                    'fields': 'files(id, name, thumbnailLink, webContentLink)',
+                    'q': "mimeType contains 'image/' and trashed = false"
+                });
+                
+                const files = response.result.files;
+                if (!files || files.length == 0) {
+                    updateStatus('No photos found in Drive.', false);
+                    return;
+                }
+
+                updateStatus('', false);
+
+                for (const file of files) {
+                    displayImage(file);
+                }
+            } catch (err) {
+                console.error(err);
+                updateStatus('Error loading files.', false);
+            }
+        }
+
+        function displayImage(file) {
+            const grid = document.getElementById('gallery-grid');
+            
+            // Note: Direct linking to Drive images is tricky. 
+            // We use thumbnailLink for preview, but often it requires an auth token to view full size.
+            // For a robust app, we would fetch the blob via API, but for simplicity here:
+            
+            const div = document.createElement('div');
+            div.className = "bg-white rounded-xl shadow-sm overflow-hidden hover:shadow-lg transition-all border border-gray-100";
+            div.innerHTML = `
+                <div class="aspect-[4/3] bg-gray-100 relative group">
+                    <img src="${file.thumbnailLink}" class="w-full h-full object-cover">
+                    <div class="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-all flex items-center justify-center opacity-0 group-hover:opacity-100">
+                        <a href="${file.webContentLink}" target="_blank" class="bg-white text-gray-900 px-4 py-2 rounded-lg font-medium hover:bg-gray-100">
+                            Download
+                        </a>
+                    </div>
+                </div>
+                <div class="p-3">
+                    <p class="text-sm font-medium text-gray-700 truncate">${file.name}</p>
+                </div>
+            `;
+            grid.prepend(div);
+        }
+
+        // 4. Upload Logic
+        document.getElementById('file-input').addEventListener('change', async (e) => {
+            const files = [...e.target.files];
+            if (files.length === 0) return;
+
+            updateStatus(`Uploading ${files.length} items...`, true);
+
+            for (const file of files) {
+                await uploadFileToDrive(file);
+            }
+
+            updateStatus('Upload complete!', false);
+            await listFiles(); // Refresh grid
+        });
+
+        async function uploadFileToDrive(file) {
+            const metadata = {
+                'name': file.name,
+                'mimeType': file.type
+            };
+
+            const accessToken = gapi.client.getToken().access_token;
+            const form = new FormData();
+            form.append('metadata', new Blob([JSON.stringify(metadata)], { type: 'application/json' }));
+            form.append('file', file);
+
+            try {
+                const response = await fetch('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart', {
+                    method: 'POST',
+                    headers: new Headers({ 'Authorization': 'Bearer ' + accessToken }),
+                    body: form
+                });
+                const data = await response.json();
+                console.log('Uploaded:', data);
+            } catch (error) {
+                console.error('Upload error', error);
+            }
+        }
+
+        function updateStatus(msg, show) {
+            const el = document.getElementById('status-bar');
+            const txt = document.getElementById('status-text');
+            txt.innerText = msg;
+            if (show) el.classList.remove('hidden');
+            else el.classList.add('hidden');
+        }
+
+        // Start loading the scripts
+        if (typeof gapi !== 'undefined') gapiLoaded();
+        if (typeof google !== 'undefined') gisLoaded();
     </script>
 </body>
 </html>
