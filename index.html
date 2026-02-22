@@ -1,434 +1,388 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TrendyOutfit | Modern Fashion & Decor</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <style>
-        body {
-            font-family: 'Poppins', sans-serif;
-            background-color: #f9fafb;
-        }
-        .product-card {
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-        .product-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
-        }
-        .modal-overlay {
-            background-color: rgba(0, 0, 0, 0.5);
-            backdrop-filter: blur(4px);
-        }
-        /* Hide scrollbar for category nav on mobile */
-        .no-scrollbar::-webkit-scrollbar {
-            display: none;
-        }
-        .no-scrollbar {
-            -ms-overflow-style: none;
-            scrollbar-width: none;
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Study Mentor AI | Smart Study Planner</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    body { font-family: 'Inter', sans-serif; }
+    .glass { backdrop-filter: blur(10px); }
+    .scrollbar-thin::-webkit-scrollbar { width: 8px; }
+    .scrollbar-thin::-webkit-scrollbar-thumb { background: #6366f1; border-radius: 999px; }
+  </style>
 </head>
-<body class="text-gray-800 flex flex-col min-h-screen">
-
-    <!-- Navigation -->
-    <nav class="bg-white shadow-sm sticky top-0 z-40">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between items-center h-16">
-                <!-- Logo -->
-                <div class="flex-shrink-0 flex items-center cursor-pointer" onclick="filterProducts('all')">
-                    <span class="text-2xl font-bold text-indigo-600 tracking-tight">TrendyOutfit</span>
-                </div>
-                
-                <!-- Desktop Menu -->
-                <div class="hidden md:flex space-x-8">
-                    <button onclick="filterProducts('all')" class="text-gray-500 hover:text-indigo-600 px-3 py-2 rounded-md text-sm font-medium transition nav-btn active-nav" data-cat="all">All</button>
-                    <button onclick="filterProducts('women')" class="text-gray-500 hover:text-indigo-600 px-3 py-2 rounded-md text-sm font-medium transition nav-btn" data-cat="women">Women's Fashion</button>
-                    <button onclick="filterProducts('men')" class="text-gray-500 hover:text-indigo-600 px-3 py-2 rounded-md text-sm font-medium transition nav-btn" data-cat="men">Men's Fashion</button>
-                    <button onclick="filterProducts('accessories')" class="text-gray-500 hover:text-indigo-600 px-3 py-2 rounded-md text-sm font-medium transition nav-btn" data-cat="accessories">Accessories</button>
-                    <button onclick="filterProducts('home')" class="text-gray-500 hover:text-indigo-600 px-3 py-2 rounded-md text-sm font-medium transition nav-btn" data-cat="home">Home Decor</button>
-                </div>
-
-                <!-- Mobile Menu Button -->
-                <div class="md:hidden flex items-center">
-                    <button onclick="toggleMobileMenu()" class="text-gray-500 hover:text-gray-700 focus:outline-none">
-                        <i class="fas fa-bars text-xl"></i>
-                    </button>
-                </div>
-            </div>
-        </div>
-
-        <!-- Mobile Menu (Hidden by default) -->
-        <div id="mobile-menu" class="hidden md:hidden bg-white border-t border-gray-100">
-            <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
-                <button onclick="filterProducts('all')" class="block w-full text-left px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-50 hover:text-indigo-600">All Products</button>
-                <button onclick="filterProducts('women')" class="block w-full text-left px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-50 hover:text-indigo-600">Women's Fashion</button>
-                <button onclick="filterProducts('men')" class="block w-full text-left px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-50 hover:text-indigo-600">Men's Fashion</button>
-                <button onclick="filterProducts('accessories')" class="block w-full text-left px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-50 hover:text-indigo-600">Accessories</button>
-                <button onclick="filterProducts('home')" class="block w-full text-left px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-50 hover:text-indigo-600">Home Decor</button>
-            </div>
-        </div>
-    </nav>
-
-    <!-- Hero Section -->
-    <header class="bg-indigo-600 text-white py-16 px-4 text-center">
-        <h1 class="text-4xl md:text-5xl font-bold mb-4">Curated Style for You</h1>
-        <p class="text-indigo-100 text-lg max-w-2xl mx-auto">Discover the latest trends in fashion and home decor. Hand-picked quality items delivered to your doorstep.</p>
+<body class="bg-slate-950 text-slate-100 min-h-screen">
+  <div class="max-w-7xl mx-auto px-4 py-6 md:py-10">
+    <header class="rounded-2xl p-6 md:p-10 bg-gradient-to-br from-blue-600 via-indigo-600 to-slate-900 shadow-2xl">
+      <p class="uppercase tracking-[0.28em] text-xs text-blue-100">Class 6–12 Study Companion</p>
+      <h1 class="mt-3 text-3xl md:text-5xl font-extrabold">Study Mentor AI</h1>
+      <p class="mt-4 text-blue-100 max-w-3xl">A personal AI study mentor that understands your routine, weak chapters, and exam timeline to help you study smarter with confidence.</p>
+      <div class="mt-6 flex flex-wrap gap-3 text-xs">
+        <span class="bg-white/15 border border-white/20 px-3 py-1 rounded-full">Long-Term Smart Planner</span>
+        <span class="bg-white/15 border border-white/20 px-3 py-1 rounded-full">Rapid Exam Preparation</span>
+        <span class="bg-white/15 border border-white/20 px-3 py-1 rounded-full">Gamified Daily Tracker</span>
+      </div>
     </header>
 
-    <!-- Main Content -->
-    <main class="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 w-full">
-        
-        <!-- Category Title -->
-        <div class="flex justify-between items-end mb-8 border-b border-gray-200 pb-4">
-            <h2 id="category-title" class="text-3xl font-bold text-gray-900">All Products</h2>
-            <span id="product-count" class="text-gray-500 text-sm">Loading...</span>
+    <main class="mt-8 grid grid-cols-1 lg:grid-cols-12 gap-6">
+      <section class="lg:col-span-7 bg-slate-900/80 border border-slate-800 rounded-2xl p-5 md:p-6">
+        <div class="flex justify-between items-center gap-3 flex-wrap">
+          <div>
+            <h2 class="text-xl md:text-2xl font-bold">First-Time Setup</h2>
+            <p class="text-slate-400 text-sm mt-1">Step-by-step onboarding. One section at a time.</p>
+          </div>
+          <span id="stepBadge" class="text-xs bg-indigo-500/20 text-indigo-200 border border-indigo-400/30 px-3 py-1 rounded-full">Step 1 of 4</span>
         </div>
 
-        <!-- Product Grid -->
-        <div id="product-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
-            <!-- Products will be injected here via JS -->
+        <div class="mt-5 w-full bg-slate-800 rounded-full h-2">
+          <div id="progressBar" class="bg-gradient-to-r from-blue-500 to-indigo-500 h-2 rounded-full" style="width: 25%"></div>
         </div>
 
-        <!-- Empty State (Hidden by default) -->
-        <div id="empty-state" class="hidden text-center py-20">
-            <div class="text-gray-300 text-6xl mb-4"><i class="fas fa-search"></i></div>
-            <h3 class="text-xl font-medium text-gray-900">No products found</h3>
-            <p class="text-gray-500">Try selecting a different category.</p>
-        </div>
+        <form id="onboardingForm" class="mt-6 space-y-6">
+          <div class="step" data-step="1">
+            <h3 class="font-semibold text-lg">1️⃣ Basic Details</h3>
+            <div class="grid md:grid-cols-2 gap-4 mt-3">
+              <label class="text-sm">Full Name
+                <input required name="fullName" class="mt-1 w-full bg-slate-800 border border-slate-700 rounded-lg p-2.5" />
+              </label>
+              <label class="text-sm">Email ID
+                <input required type="email" name="email" class="mt-1 w-full bg-slate-800 border border-slate-700 rounded-lg p-2.5" />
+              </label>
+              <label class="text-sm">School Name
+                <input required name="school" class="mt-1 w-full bg-slate-800 border border-slate-700 rounded-lg p-2.5" />
+              </label>
+              <label class="text-sm">Board
+                <select required name="board" class="mt-1 w-full bg-slate-800 border border-slate-700 rounded-lg p-2.5">
+                  <option value="">Choose board</option>
+                  <option>CBSE</option><option>ICSE</option><option>State Board</option><option>Other</option>
+                </select>
+              </label>
+              <label class="text-sm">Class
+                <select required name="class" class="mt-1 w-full bg-slate-800 border border-slate-700 rounded-lg p-2.5">
+                  <option value="">Select class</option>
+                  <option>6</option><option>7</option><option>8</option><option>9</option><option>10</option><option>11</option><option>12</option>
+                </select>
+              </label>
+            </div>
+          </div>
+
+          <div class="step hidden" data-step="2">
+            <h3 class="font-semibold text-lg">2️⃣ Subject Details</h3>
+            <label class="text-sm block mt-3">What subjects do you study? (comma-separated)
+              <input required id="subjectsInput" class="mt-1 w-full bg-slate-800 border border-slate-700 rounded-lg p-2.5" placeholder="Maths, Science, English" />
+            </label>
+            <button type="button" id="generateSubjectCards" class="mt-3 bg-blue-600 hover:bg-blue-500 px-4 py-2 rounded-lg text-sm">Set Chapters & Understanding</button>
+            <div id="subjectCards" class="mt-4 space-y-4"></div>
+          </div>
+
+          <div class="step hidden" data-step="3">
+            <h3 class="font-semibold text-lg">3️⃣ Daily Routine Mapping</h3>
+            <div class="grid md:grid-cols-2 gap-4 mt-3">
+              <label class="text-sm">School Start
+                <input required type="time" name="schoolStart" class="mt-1 w-full bg-slate-800 border border-slate-700 rounded-lg p-2.5" />
+              </label>
+              <label class="text-sm">School End
+                <input required type="time" name="schoolEnd" class="mt-1 w-full bg-slate-800 border border-slate-700 rounded-lg p-2.5" />
+              </label>
+              <label class="text-sm">Coaching Start (optional)
+                <input type="time" name="coachStart" class="mt-1 w-full bg-slate-800 border border-slate-700 rounded-lg p-2.5" />
+              </label>
+              <label class="text-sm">Coaching End (optional)
+                <input type="time" name="coachEnd" class="mt-1 w-full bg-slate-800 border border-slate-700 rounded-lg p-2.5" />
+              </label>
+              <label class="text-sm">Travel time (mins)
+                <input type="number" min="0" name="travel" value="30" class="mt-1 w-full bg-slate-800 border border-slate-700 rounded-lg p-2.5" />
+              </label>
+              <label class="text-sm">Sleep (hours/day)
+                <input required type="number" min="6" max="12" value="8" name="sleep" class="mt-1 w-full bg-slate-800 border border-slate-700 rounded-lg p-2.5" />
+              </label>
+            </div>
+            <div id="freeHoursBox" class="mt-4 hidden rounded-xl bg-emerald-500/10 border border-emerald-400/30 p-3 text-sm"></div>
+          </div>
+
+          <div class="step hidden" data-step="4">
+            <h3 class="font-semibold text-lg">4️⃣ Study Goal Setting</h3>
+            <div class="grid gap-4 mt-3">
+              <label class="text-sm">Main Goal
+                <select required name="goal" class="mt-1 w-full bg-slate-800 border border-slate-700 rounded-lg p-2.5">
+                  <option value="">Choose your goal</option>
+                  <option>Score better in exams</option>
+                  <option>Complete syllabus on time</option>
+                  <option>Improve weak subjects</option>
+                  <option>Exam in coming days</option>
+                </select>
+              </label>
+              <label class="text-sm">How many hours/day do you WANT to study?
+                <select required name="desiredHours" class="mt-1 w-full bg-slate-800 border border-slate-700 rounded-lg p-2.5">
+                  <option value="2">2 hours</option><option value="3">3 hours</option><option value="4">4 hours</option><option value="5">5 hours</option>
+                </select>
+              </label>
+            </div>
+          </div>
+
+          <div class="flex justify-between pt-2">
+            <button type="button" id="prevBtn" class="px-4 py-2 rounded-lg border border-slate-600 text-slate-300 hidden">Previous</button>
+            <button type="button" id="nextBtn" class="ml-auto px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-500">Next</button>
+          </div>
+        </form>
+      </section>
+
+      <aside class="lg:col-span-5 space-y-6">
+        <section class="bg-slate-900/80 border border-slate-800 rounded-2xl p-5">
+          <div class="flex justify-between items-center">
+            <h3 class="font-bold text-lg">Mode Switch</h3>
+            <div class="text-xs rounded-full px-3 py-1 bg-slate-800">AI Planner</div>
+          </div>
+          <div class="mt-4 grid grid-cols-2 gap-2 bg-slate-800 p-1 rounded-xl">
+            <button id="longModeBtn" class="mode-btn bg-indigo-600 px-3 py-2 rounded-lg text-sm">Long-Term Planner</button>
+            <button id="rapidModeBtn" class="mode-btn px-3 py-2 rounded-lg text-sm text-slate-300">Rapid Exam Prep</button>
+          </div>
+
+          <div id="rapidPanel" class="hidden mt-4 space-y-3 text-sm">
+            <label>Exam name<input id="examName" class="mt-1 w-full bg-slate-800 border border-slate-700 rounded-lg p-2" /></label>
+            <label>Exam start date<input id="examDate" type="date" class="mt-1 w-full bg-slate-800 border border-slate-700 rounded-lg p-2" /></label>
+            <label>Subjects included (comma-separated)<input id="examSubjects" class="mt-1 w-full bg-slate-800 border border-slate-700 rounded-lg p-2" placeholder="Maths, Science" /></label>
+            <label>Upload Admit Card / Date Sheet (image/pdf)
+              <input id="examFile" type="file" accept="image/*,.pdf" class="mt-1 w-full text-xs" />
+            </label>
+            <button id="generateRapidPlan" class="w-full bg-orange-600 hover:bg-orange-500 py-2 rounded-lg">Create Crash Plan</button>
+            <p class="text-xs text-slate-400">The app simulates datesheet extraction and prioritizes weak + high-weight chapters.</p>
+          </div>
+        </section>
+
+        <section class="bg-slate-900/80 border border-slate-800 rounded-2xl p-5">
+          <h3 class="font-bold text-lg">Daily Tracker & Gamification</h3>
+          <div class="mt-4 space-y-3" id="taskList"></div>
+          <div class="mt-4 grid grid-cols-3 gap-2 text-center text-xs">
+            <div class="bg-slate-800 p-2 rounded-lg"><p class="text-slate-400">Points</p><p id="points" class="text-lg font-bold text-emerald-300">0</p></div>
+            <div class="bg-slate-800 p-2 rounded-lg"><p class="text-slate-400">Streak</p><p id="streak" class="text-lg font-bold text-blue-300">0</p></div>
+            <div class="bg-slate-800 p-2 rounded-lg"><p class="text-slate-400">Level</p><p id="level" class="text-sm font-bold text-indigo-300">Beginner</p></div>
+          </div>
+        </section>
+      </aside>
     </main>
 
-    <!-- Footer -->
-    <footer class="bg-gray-900 text-white pt-12 pb-8">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
-                <div>
-                    <h3 class="text-xl font-bold text-white mb-4">TrendyOutfit</h3>
-                    <p class="text-gray-400 text-sm">Your one-stop destination for fashion, accessories, and home decor. We curate the best styles just for you.</p>
-                </div>
-                <div>
-                    <h4 class="text-lg font-semibold text-white mb-4">Categories</h4>
-                    <ul class="space-y-2 text-gray-400 text-sm">
-                        <li><a href="#" onclick="filterProducts('women')" class="hover:text-white transition">Women</a></li>
-                        <li><a href="#" onclick="filterProducts('men')" class="hover:text-white transition">Men</a></li>
-                        <li><a href="#" onclick="filterProducts('accessories')" class="hover:text-white transition">Accessories</a></li>
-                        <li><a href="#" onclick="filterProducts('home')" class="hover:text-white transition">Home</a></li>
-                    </ul>
-                </div>
-                <div>
-                    <h4 class="text-lg font-semibold text-white mb-4">Connect</h4>
-                    <div class="flex space-x-4">
-                        <a href="#" class="text-gray-400 hover:text-white transition"><i class="fab fa-instagram text-xl"></i></a>
-                        <a href="#" class="text-gray-400 hover:text-white transition"><i class="fab fa-twitter text-xl"></i></a>
-                        <a href="#" class="text-gray-400 hover:text-white transition"><i class="fab fa-facebook text-xl"></i></a>
-                    </div>
-                </div>
-            </div>
-            <div class="border-t border-gray-800 pt-8 text-center text-sm text-gray-500">
-                &copy; 2024 TrendyOutfit. All rights reserved.
-            </div>
+    <section class="mt-6 bg-slate-900/80 border border-slate-800 rounded-2xl p-5 md:p-6">
+      <h2 class="text-xl font-bold">AI Study Output</h2>
+      <div class="mt-4 grid xl:grid-cols-2 gap-4">
+        <div class="bg-slate-800/70 rounded-xl p-4">
+          <h4 class="font-semibold">📅 Daily Timetable</h4>
+          <ul id="dailyPlan" class="mt-3 space-y-2 text-sm text-slate-200"></ul>
         </div>
-    </footer>
-
-    <!-- Product Modal -->
-    <div id="product-modal" class="fixed inset-0 z-50 hidden overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
-        <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
-            <!-- Overlay -->
-            <div class="fixed inset-0 transition-opacity modal-overlay" aria-hidden="true" onclick="closeModal()"></div>
-
-            <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
-
-            <!-- Modal Panel -->
-            <div class="inline-block align-bottom bg-white rounded-2xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-2xl sm:w-full relative">
-                
-                <button type="button" onclick="closeModal()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-500 z-10 bg-white rounded-full p-1 focus:outline-none">
-                    <span class="sr-only">Close</span>
-                    <i class="fas fa-times text-xl"></i>
-                </button>
-
-                <div class="sm:flex sm:items-stretch">
-                    <!-- Image Side -->
-                    <div class="sm:w-1/2 bg-gray-100 relative h-64 sm:h-auto">
-                        <img id="modal-image" class="absolute inset-0 w-full h-full object-cover" src="" alt="">
-                    </div>
-                    
-                    <!-- Content Side -->
-                    <div class="sm:w-1/2 p-6 sm:p-8 flex flex-col justify-between bg-white">
-                        <div>
-                            <div class="mb-2">
-                                <span id="modal-category" class="inline-block px-2 py-1 text-xs font-semibold tracking-wide uppercase text-indigo-500 bg-indigo-50 rounded-full">Category</span>
-                            </div>
-                            <h3 id="modal-title" class="text-2xl font-bold text-gray-900 mb-2">Product Name</h3>
-                            <p id="modal-price" class="text-3xl text-gray-900 font-light mb-4">$0.00</p>
-                            <div class="prose prose-sm text-gray-500 mb-6">
-                                <p id="modal-description">Description goes here.</p>
-                            </div>
-                        </div>
-                        
-                        <div class="mt-auto pt-4 border-t border-gray-100">
-                            <a id="modal-link" href="#" target="_blank" class="w-full flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-lg text-white bg-yellow-400 hover:bg-yellow-500 md:py-4 md:text-lg md:px-10 shadow-sm hover:shadow-lg transition-all">
-                                <i class="fab fa-amazon mr-2"></i> Buy on Amazon
-                            </a>
-                            <p class="text-xs text-center text-gray-400 mt-3">Sold and shipped via Amazon</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
+        <div class="bg-slate-800/70 rounded-xl p-4">
+          <h4 class="font-semibold">🗓️ Weekly Targets</h4>
+          <ul id="weeklyTargets" class="mt-3 space-y-2 text-sm text-slate-200"></ul>
         </div>
-    </div>
+      </div>
 
-    <!-- JavaScript logic -->
-    <script>
-        // --- Product Data ---
-        const products = [
-            // Women's Fashion
-            {
-                id: 1,
-                name: "Summer Floral Maxi Dress",
-                price: 49.99,
-                category: "women",
-                image: "https://images.unsplash.com/photo-1572804013309-59a88b7e92f1?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
-                description: "Lightweight, breathable fabric perfect for summer days. Features a beautiful floral print and a flattering wrap design.",
-                link: "https://www.amazon.com/s?k=floral+maxi+dress"
-            },
-            {
-                id: 2,
-                name: "Classic Leather Totebag",
-                price: 89.50,
-                category: "women",
-                image: "https://images.unsplash.com/photo-1584917865442-de89df76afd3?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
-                description: "Premium vegan leather tote bag with ample storage. Includes a matching pouch and gold-tone hardware.",
-                link: "https://www.amazon.com/s?k=leather+tote+bag"
-            },
-            {
-                id: 3,
-                name: "High-Waist Denim Jeans",
-                price: 55.00,
-                category: "women",
-                image: "https://images.unsplash.com/photo-1541099649105-f69ad21f3246?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
-                description: "Vintage-inspired high-waist jeans with a relaxed fit. Made from sustainable cotton denim.",
-                link: "https://www.amazon.com/s?k=high+waist+jeans"
-            },
-            
-            // Men's Fashion
-            {
-                id: 4,
-                name: "Urban Bomber Jacket",
-                price: 75.00,
-                category: "men",
-                image: "https://images.unsplash.com/photo-1591047139829-d91aecb6caea?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
-                description: "A sleek bomber jacket for the modern man. Water-resistant outer shell with a comfortable quilted lining.",
-                link: "https://www.amazon.com/s?k=mens+bomber+jacket"
-            },
-            {
-                id: 5,
-                name: "Minimalist Chronograph Watch",
-                price: 120.00,
-                category: "men",
-                image: "https://images.unsplash.com/photo-1524592094714-0f0654e20314?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
-                description: "Stainless steel case with a genuine leather strap. Features a precision quartz movement and water resistance.",
-                link: "https://www.amazon.com/s?k=mens+watch"
-            },
-            {
-                id: 6,
-                name: "Casual Canvas Sneakers",
-                price: 45.99,
-                category: "men",
-                image: "https://images.unsplash.com/photo-1525966222134-fcfa99b8ae77?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
-                description: "Versatile low-top sneakers perfect for daily wear. Durable canvas upper with a cushioned rubber sole.",
-                link: "https://www.amazon.com/s?k=mens+canvas+sneakers"
-            },
+      <div class="mt-4 grid xl:grid-cols-3 gap-4 text-sm">
+        <div class="bg-slate-800/70 rounded-xl p-4"><h4 class="font-semibold">📈 Analytics</h4><p id="analytics" class="mt-2 text-slate-300">Complete onboarding to see analytics.</p></div>
+        <div class="bg-slate-800/70 rounded-xl p-4"><h4 class="font-semibold">🎯 Today's Priority Task</h4><p id="priorityTask" class="mt-2 text-slate-300">Not generated yet.</p></div>
+        <div class="bg-slate-800/70 rounded-xl p-4"><h4 class="font-semibold">💬 Mentor Message</h4><p id="mentorMessage" class="mt-2 text-blue-200">You are doing great. Let's create your personalized plan.</p></div>
+      </div>
+    </section>
+  </div>
 
-            // Accessories
-            {
-                id: 7,
-                name: "Retro Round Sunglasses",
-                price: 25.00,
-                category: "accessories",
-                image: "https://images.unsplash.com/photo-1511499767150-a48a237f0083?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
-                description: "Vintage-inspired round frames with UV400 protection lenses. Adds a cool touch to any outfit.",
-                link: "https://www.amazon.com/s?k=round+sunglasses"
-            },
-            {
-                id: 8,
-                name: "Wool Knit Scarf",
-                price: 32.50,
-                category: "accessories",
-                image: "https://images.unsplash.com/photo-1520903920243-00d872a2d1c9?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
-                description: "Soft and warm wool blend scarf. Generous length allows for multiple wrapping styles.",
-                link: "https://www.amazon.com/s?k=wool+scarf"
-            },
-            {
-                id: 9,
-                name: "Leather Wallet",
-                price: 40.00,
-                category: "accessories",
-                image: "https://images.unsplash.com/photo-1627123424574-724758594e93?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
-                description: "Slim bifold wallet made from full-grain leather. RFID blocking technology keeps your cards safe.",
-                link: "https://www.amazon.com/s?k=leather+wallet"
-            },
+  <script>
+    let step = 1;
+    const totalSteps = 4;
+    let freeHours = 0;
+    let studyData = { subjects: [] };
+    let points = 0;
+    let streak = 0;
 
-            // Home Decor
-            {
-                id: 10,
-                name: "Modern Ceramic Vase",
-                price: 35.00,
-                category: "home",
-                image: "https://images.unsplash.com/photo-1580480055273-228ff5388ef8?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
-                description: "Minimalist ceramic vase with a matte finish. Perfect for dried flowers or as a standalone sculptural piece.",
-                link: "https://www.amazon.com/s?k=ceramic+vase"
-            },
-            {
-                id: 11,
-                name: "Velvet Throw Pillow",
-                price: 22.99,
-                category: "home",
-                image: "https://images.unsplash.com/photo-1584100936595-c0654b55a2e6?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
-                description: "Luxurious velvet throw pillow cover. Adds texture and a pop of color to your living room sofa.",
-                link: "https://www.amazon.com/s?k=velvet+pillow"
-            },
-            {
-                id: 12,
-                name: "Industrial Desk Lamp",
-                price: 59.99,
-                category: "home",
-                image: "https://images.unsplash.com/photo-1507473888900-52e1adad5420?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
-                description: "Adjustable metal desk lamp with an antique brass finish. Provides focused lighting for your workspace.",
-                link: "https://www.amazon.com/s?k=desk+lamp"
-            }
-        ];
+    const levels = [
+      { name: 'Beginner', min: 0 },
+      { name: 'Focused', min: 40 },
+      { name: 'Consistent', min: 90 },
+      { name: 'Topper Mode 🔥', min: 160 }
+    ];
 
-        // --- Functions ---
+    const baseTasks = ['Complete study block', 'Finish revision set', 'Solve 10 practice questions'];
+    const taskListEl = document.getElementById('taskList');
 
-        // Initialize
-        document.addEventListener('DOMContentLoaded', () => {
-            filterProducts('all');
+    function renderTasks() {
+      taskListEl.innerHTML = '';
+      baseTasks.forEach((task, idx) => {
+        const card = document.createElement('div');
+        card.className = 'bg-slate-800 border border-slate-700 rounded-lg p-3';
+        card.innerHTML = `
+          <p class="font-medium text-sm">${task}</p>
+          <div class="mt-2 flex gap-2 text-xs">
+            <button class="px-2 py-1 rounded bg-emerald-600" onclick="updateTask(${idx}, 'done')">✅ Completed</button>
+            <button class="px-2 py-1 rounded bg-amber-600" onclick="updateTask(${idx}, 'partial')">⏳ Partially Done</button>
+            <button class="px-2 py-1 rounded bg-rose-700" onclick="updateTask(${idx}, 'skip')">❌ Skipped</button>
+          </div>`;
+        taskListEl.appendChild(card);
+      });
+    }
+
+    function updateTask(idx, status) {
+      if (status === 'done') { points += 10; streak += 1; }
+      if (status === 'partial') { points += 5; }
+      if (status === 'skip') { streak = 0; }
+
+      document.getElementById('points').textContent = points;
+      document.getElementById('streak').textContent = streak;
+      document.getElementById('level').textContent = levels.filter(l => points >= l.min).at(-1).name;
+      document.getElementById('mentorMessage').textContent = status === 'skip'
+        ? 'Missed one task? No problem. We reshuffle and continue without pressure.'
+        : 'Nice progress! Small steps daily build strong results.';
+    }
+
+    function stepUI() {
+      document.querySelectorAll('.step').forEach(el => el.classList.add('hidden'));
+      document.querySelector(`.step[data-step="${step}"]`).classList.remove('hidden');
+      document.getElementById('prevBtn').classList.toggle('hidden', step === 1);
+      document.getElementById('nextBtn').textContent = step === totalSteps ? 'Generate AI Plan' : 'Next';
+      document.getElementById('stepBadge').textContent = `Step ${step} of ${totalSteps}`;
+      document.getElementById('progressBar').style.width = `${(step / totalSteps) * 100}%`;
+    }
+
+    function toHours(start, end) {
+      if (!start || !end) return 0;
+      const [sh, sm] = start.split(':').map(Number);
+      const [eh, em] = end.split(':').map(Number);
+      return Math.max(0, (eh * 60 + em - (sh * 60 + sm)) / 60);
+    }
+
+    function computeFreeHours(fd) {
+      const school = toHours(fd.get('schoolStart'), fd.get('schoolEnd'));
+      const coaching = toHours(fd.get('coachStart'), fd.get('coachEnd'));
+      const travel = Number(fd.get('travel') || 0) / 60;
+      const sleep = Number(fd.get('sleep') || 8);
+      freeHours = Math.max(0.5, 24 - school - coaching - travel - sleep - 1.5);
+      const box = document.getElementById('freeHoursBox');
+      box.classList.remove('hidden');
+      box.textContent = `Estimated realistic self-study time: ${freeHours.toFixed(1)} hours/day.`;
+    }
+
+    function subjectStrengthValue(level) {
+      const map = { '⭐ Beginner': 1, '⭐⭐ Average': 2, '⭐⭐⭐ Good': 3, '⭐⭐⭐⭐ Strong': 4 };
+      return map[level] || 2;
+    }
+
+    function generatePlans(formData) {
+      const desired = Number(formData.get('desiredHours'));
+      const actual = Math.min(desired, freeHours || desired);
+      const weakFirst = [...studyData.subjects].sort((a, b) => a.score - b.score);
+      const top = weakFirst[0]?.name || 'Maths';
+      const second = weakFirst[1]?.name || 'Science';
+
+      const daily = [
+        `🕓 ${actual.toFixed(1)}h focused study (split in 45-min blocks + short breaks).`,
+        `📘 ${Math.max(1, actual * 0.45).toFixed(1)}h on weak subject: ${top}.`,
+        `🧪 ${Math.max(0.8, actual * 0.25).toFixed(1)}h practice problems (${second}).`,
+        `🔁 ${Math.max(0.7, actual * 0.2).toFixed(1)}h revision + formulas/definitions.`,
+        `🧠 15-min recap journal and tomorrow prep.`
+      ];
+
+      const weekly = [
+        `Mon/Tue: Finish 2 chapters from ${top} + quick revision.`,
+        `Wed/Thu: Rotate to ${second} and one strong subject to avoid boredom.`,
+        `Fri: Mixed practice + previous-year style questions.`,
+        `Sat: Weekly revision map + doubt clearing.`,
+        `Sun: Mock test + smart reshuffle for skipped tasks.`
+      ];
+
+      document.getElementById('dailyPlan').innerHTML = daily.map(i => `<li>• ${i}</li>`).join('');
+      document.getElementById('weeklyTargets').innerHTML = weekly.map(i => `<li>• ${i}</li>`).join('');
+      document.getElementById('priorityTask').textContent = `${top}: complete highest-weight weak chapter first.`;
+      document.getElementById('analytics').textContent = `Daily study target: ${actual.toFixed(1)}h | Weak vs Strong trend: ${top} needs priority. Keep consistency streak for best improvement.`;
+      document.getElementById('mentorMessage').textContent = 'You are not behind. Stick to this plan and improve one chapter at a time.';
+    }
+
+    document.getElementById('generateSubjectCards').addEventListener('click', () => {
+      const subjects = document.getElementById('subjectsInput').value.split(',').map(s => s.trim()).filter(Boolean);
+      const container = document.getElementById('subjectCards');
+      container.innerHTML = '';
+      subjects.forEach((subject, idx) => {
+        const card = document.createElement('div');
+        card.className = 'bg-slate-800 border border-slate-700 rounded-xl p-3';
+        card.innerHTML = `
+          <h4 class="font-semibold">${subject}</h4>
+          <label class="text-xs block mt-2">Chapters (comma-separated)
+            <input class="subject-chapters mt-1 w-full bg-slate-900 border border-slate-700 rounded p-2" data-name="${subject}" />
+          </label>
+          <label class="text-xs block mt-2">Understanding Level
+            <select class="subject-score mt-1 w-full bg-slate-900 border border-slate-700 rounded p-2" data-name="${subject}">
+              <option>⭐ Beginner</option><option>⭐⭐ Average</option><option>⭐⭐⭐ Good</option><option>⭐⭐⭐⭐ Strong</option>
+            </select>
+          </label>`;
+        container.appendChild(card);
+      });
+    });
+
+    document.getElementById('nextBtn').addEventListener('click', () => {
+      const form = document.getElementById('onboardingForm');
+      const fd = new FormData(form);
+
+      if (step === 2) {
+        const subjectNodes = [...document.querySelectorAll('.subject-score')];
+        studyData.subjects = subjectNodes.map(node => {
+          const subject = node.dataset.name;
+          const chapterNode = document.querySelector(`.subject-chapters[data-name="${subject}"]`);
+          return {
+            name: subject,
+            chapters: (chapterNode?.value || '').split(',').map(c => c.trim()).filter(Boolean),
+            score: subjectStrengthValue(node.value)
+          };
         });
+      }
 
-        function formatCurrency(value) {
-            return '$' + value.toFixed(2);
-        }
+      if (step === 3) computeFreeHours(fd);
 
-        function getCategoryName(cat) {
-            const map = {
-                'all': 'All Products',
-                'women': "Women's Fashion",
-                'men': "Men's Fashion",
-                'accessories': 'Accessories',
-                'home': 'Home Decor'
-            };
-            return map[cat] || 'Products';
-        }
+      if (step < totalSteps) {
+        step += 1;
+        stepUI();
+      } else {
+        generatePlans(fd);
+      }
+    });
 
-        // Filter and Render
-        function filterProducts(category) {
-            // Update UI Active State
-            document.querySelectorAll('.nav-btn').forEach(btn => {
-                if(btn.dataset.cat === category) {
-                    btn.classList.add('text-indigo-600', 'bg-indigo-50');
-                    btn.classList.remove('text-gray-500');
-                } else {
-                    btn.classList.remove('text-indigo-600', 'bg-indigo-50');
-                    btn.classList.add('text-gray-500');
-                }
-            });
+    document.getElementById('prevBtn').addEventListener('click', () => {
+      if (step > 1) { step -= 1; stepUI(); }
+    });
 
-            // Close mobile menu if open
-            document.getElementById('mobile-menu').classList.add('hidden');
+    document.getElementById('longModeBtn').addEventListener('click', () => {
+      document.getElementById('rapidPanel').classList.add('hidden');
+      document.getElementById('longModeBtn').classList.add('bg-indigo-600');
+      document.getElementById('rapidModeBtn').classList.remove('bg-indigo-600');
+    });
 
-            // Filter Data
-            const filtered = category === 'all' 
-                ? products 
-                : products.filter(p => p.category === category);
+    document.getElementById('rapidModeBtn').addEventListener('click', () => {
+      document.getElementById('rapidPanel').classList.remove('hidden');
+      document.getElementById('rapidModeBtn').classList.add('bg-indigo-600');
+      document.getElementById('longModeBtn').classList.remove('bg-indigo-600');
+    });
 
-            // Render
-            const grid = document.getElementById('product-grid');
-            const emptyState = document.getElementById('empty-state');
-            const title = document.getElementById('category-title');
-            const count = document.getElementById('product-count');
+    document.getElementById('generateRapidPlan').addEventListener('click', () => {
+      const exam = document.getElementById('examName').value || 'Upcoming Exam';
+      const date = document.getElementById('examDate').value;
+      const subjects = (document.getElementById('examSubjects').value || 'Maths, Science').split(',').map(v => v.trim()).filter(Boolean);
+      const start = date ? new Date(date) : new Date(Date.now() + 7 * 86400000);
+      const now = new Date();
+      const days = Math.max(1, Math.ceil((start - now) / 86400000));
 
-            title.textContent = getCategoryName(category);
-            count.textContent = `${filtered.length} items`;
-            
-            grid.innerHTML = '';
+      const crash = [];
+      for (let d = 1; d <= Math.min(days, 5); d++) {
+        const sub = subjects[(d - 1) % subjects.length];
+        crash.push(`Day ${d}: 3h ${sub} high-weight chapters • 1h revision • 30m formulas • 45m mock test`);
+      }
 
-            if (filtered.length === 0) {
-                grid.classList.add('hidden');
-                emptyState.classList.remove('hidden');
-            } else {
-                emptyState.classList.add('hidden');
-                grid.classList.remove('hidden');
+      document.getElementById('dailyPlan').innerHTML = crash.map(i => `<li>• ${i}</li>`).join('');
+      document.getElementById('weeklyTargets').innerHTML = `<li>• ${exam} starts in ${days} day(s). Prioritize weak chapters first.</li><li>• Datesheet upload parsed (simulated): subject order aligned in crash plan.</li>`;
+      document.getElementById('priorityTask').textContent = `Rapid mode: Today's highest priority is ${subjects[0]} + revision.`;
+      document.getElementById('mentorMessage').textContent = 'Short timeline? Stay calm. We focus on important chapters, revision, and mocks.';
+      document.getElementById('analytics').textContent = `Crash plan active: ${days} day(s) left. Balanced prep with no overload.`;
+    });
 
-                filtered.forEach(product => {
-                    const card = document.createElement('div');
-                    card.className = 'product-card bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden cursor-pointer flex flex-col h-full';
-                    card.onclick = () => openModal(product);
-                    
-                    card.innerHTML = `
-                        <div class="relative h-64 overflow-hidden bg-gray-100 group">
-                            <img src="${product.image}" alt="${product.name}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
-                            <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-10 transition-all duration-300"></div>
-                            <div class="absolute bottom-4 right-4 bg-white rounded-full p-2 shadow-md opacity-0 transform translate-y-4 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300">
-                                <i class="fas fa-eye text-indigo-600"></i>
-                            </div>
-                        </div>
-                        <div class="p-5 flex-grow flex flex-col justify-between">
-                            <div>
-                                <p class="text-xs font-semibold text-indigo-500 uppercase tracking-wide mb-1">${getCategoryName(product.category)}</p>
-                                <h3 class="text-lg font-bold text-gray-900 mb-1 leading-tight">${product.name}</h3>
-                            </div>
-                            <div class="mt-4 flex items-center justify-between">
-                                <span class="text-xl font-bold text-gray-900">${formatCurrency(product.price)}</span>
-                                <span class="text-sm text-gray-400">View Details</span>
-                            </div>
-                        </div>
-                    `;
-                    grid.appendChild(card);
-                });
-            }
-        }
-
-        // Modal Logic
-        function openModal(product) {
-            const modal = document.getElementById('product-modal');
-            const mTitle = document.getElementById('modal-title');
-            const mPrice = document.getElementById('modal-price');
-            const mDesc = document.getElementById('modal-description');
-            const mImg = document.getElementById('modal-image');
-            const mLink = document.getElementById('modal-link');
-            const mCat = document.getElementById('modal-category');
-
-            mTitle.textContent = product.name;
-            mPrice.textContent = formatCurrency(product.price);
-            mDesc.textContent = product.description;
-            mImg.src = product.image;
-            mLink.href = product.link;
-            mCat.textContent = getCategoryName(product.category);
-
-            modal.classList.remove('hidden');
-            document.body.style.overflow = 'hidden'; // Prevent background scrolling
-        }
-
-        function closeModal() {
-            const modal = document.getElementById('product-modal');
-            modal.classList.add('hidden');
-            document.body.style.overflow = '';
-        }
-
-        // Mobile Menu Toggle
-        function toggleMobileMenu() {
-            const menu = document.getElementById('mobile-menu');
-            menu.classList.toggle('hidden');
-        }
-
-        // Close modal on Escape key
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape') closeModal();
-        });
-    </script>
+    renderTasks();
+    stepUI();
+  </script>
 </body>
 </html>
